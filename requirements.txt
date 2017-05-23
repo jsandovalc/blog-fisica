@@ -1,2 +1,3 @@
 Jinja2==2.9.6
 Nikola==7.8.5
+webassets==0.12.1
