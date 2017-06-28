@@ -1,4 +1,5 @@
 import json
+import pymongo
 from sanic import Sanic
 from sanic_jinja2 import SanicJinja2
 from motor import motor_asyncio
@@ -19,7 +20,9 @@ app.add_task(setup_db())
 
 @app.route("/")
 async def index(request):
-    posts = await db.blog_fisica.post.find()
+    posts = await db.blog_fisica.post.find(
+        {'draft': False}).sort('publish_date', pymongo.DESCENDING).to_list(
+            length=10)
     return jinja.render('index.html', request, posts=posts)
 
 @app.route("/post")
