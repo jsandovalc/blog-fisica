@@ -98,7 +98,7 @@
                 {{ post.subtitle }}
               </h3>
             </a>
-            <p class="post-meta">Publicado por <a href="#">Start Bootstrap</a> on September 24, 2014</p>
+            <p class="post-meta">Publicado en {{ post.publish_date.strftime('%B %d, %Y') }}</p>
           </div>
           <hr>
           {% endfor %}
