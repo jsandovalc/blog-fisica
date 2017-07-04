@@ -14,7 +14,7 @@ app.static('/static', './static')
 async def setup_db():
     """"""
     global db
-    db = motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27019')
+    db = motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27017')
 
 app.add_task(setup_db())
 
