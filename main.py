@@ -1,7 +1,9 @@
 import json
 import pymongo
+import wtforms
 from sanic import Sanic
 from sanic_jinja2 import SanicJinja2
+from sanic_wtf import SanicForm
 from motor import motor_asyncio
 
 
@@ -9,7 +11,15 @@ app = Sanic(__name__)
 jinja = SanicJinja2(app)
 db = None
 
+app.config['WTF_CSRF_SECRET_KEY'] = 'the super secret'
+
 app.static('/static', './static')
+
+
+class PostForm(SanicForm):
+    title = wtforms.StringField('Título', validators=[DataRequired()])
+    subtitle = wtforms.StringField('Subtítulo')
+
 
 async def setup_db():
     """"""
