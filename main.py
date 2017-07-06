@@ -24,6 +24,11 @@ class PostForm(SanicForm):
     publish_date = wtforms.DateTimeField('Fecha de publicación')
     content = wtforms.StringField('Contenido')
 
+session = {}
+
+@app.middleware('request')
+async def add_session(request):
+    request['session'] = session
 
 async def setup_db():
     """"""
@@ -52,7 +57,7 @@ async def post(request, slug):
 @app.route('/admin/post')
 async def admin_post(request):
     form = PostForm(request)
-    return jinja.render('add_post.html', form=form)
+    return jinja.render('add_post.html', request, form=form)
 
 
 if __name__ == '__main__':
