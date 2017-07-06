@@ -1,6 +1,7 @@
 import json
 import pymongo
 import wtforms
+from wtforms import validators
 from sanic import Sanic
 from sanic_jinja2 import SanicJinja2
 from sanic_wtf import SanicForm
@@ -17,8 +18,11 @@ app.static('/static', './static')
 
 
 class PostForm(SanicForm):
-    title = wtforms.StringField('Título', validators=[DataRequired()])
+    title = wtforms.StringField('Título', validators=[
+        validators.DataRequired()])
     subtitle = wtforms.StringField('Subtítulo')
+    publish_date = wtforms.DateTimeField('Fecha de publicación')
+    content = wtforms.StringField('Contenido')
 
 
 async def setup_db():
@@ -44,6 +48,11 @@ async def post(request, slug):
     post = await db.blog_fisica.post.find_one({'slug': slug})
     post['content'] = json.loads(post['content'])
     return jinja.render('post.html', request, post=post)
+
+@app.route('/admin/post')
+async def admin_post(request):
+    form = PostForm(request)
+    return jinja.render('add_post.html', form=form)
 
 
 if __name__ == '__main__':
