@@ -1,7 +1,7 @@
 import json
 import pymongo
 import wtforms
-from wtforms import validators
+from wtforms import validators, widgets
 from sanic import Sanic
 from sanic_jinja2 import SanicJinja2
 from sanic_wtf import SanicForm
@@ -21,8 +21,9 @@ class PostForm(SanicForm):
     title = wtforms.StringField('Título', validators=[
         validators.DataRequired()])
     subtitle = wtforms.StringField('Subtítulo')
+    slug = wtforms.StringField('Cadena legible')
     publish_date = wtforms.DateTimeField('Fecha de publicación')
-    content = wtforms.StringField('Contenido')
+    content = wtforms.StringField('Contenido', widget=widgets.TextArea())
 
 session = {}
 
