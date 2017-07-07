@@ -76,6 +76,12 @@ class Post(HTTPMethodView):
             print('Validated')
 
             return response.redirect('/')
+        print('not validadted')
+        for fieldName, errorMessages in form.errors.items():
+            for err in errorMessages:
+                print('error', err)
+        # do something with your errorMessages for fieldName
+        return response.redirect('/404')
 
 app.add_route(Post.as_view(), '/admin/post')
 
