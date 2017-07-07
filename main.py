@@ -2,7 +2,8 @@ import json
 import pymongo
 import wtforms
 from wtforms import validators, widgets
-from sanic import Sanic
+from sanic import Sanic, response
+from sanic.views import HTTPMethodView
 from sanic_jinja2 import SanicJinja2
 from sanic_wtf import SanicForm
 from motor import motor_asyncio
@@ -55,10 +56,28 @@ async def post(request, slug):
     post['content'] = json.loads(post['content'])
     return jinja.render('post.html', request, post=post)
 
-@app.route('/admin/post')
-async def admin_post(request):
-    form = PostForm(request)
-    return jinja.render('add_post.html', request, form=form)
+
+class Post(HTTPMethodView):
+    """A post in admin.
+
+    It allows to create and store a post.
+
+    """
+    async def get(self, request):
+        """Return the form."""
+        form = PostForm(request)
+        return jinja.render('add_post.html', request, form=form)
+
+    async def post(self, request):
+        """Save the post."""
+        form = PostForm(request)
+
+        if form.validate_on_submit():
+            print('Validated')
+
+            return response.redirect('/')
+
+app.add_route(Post.as_view(), '/admin/post')
 
 
 if __name__ == '__main__':

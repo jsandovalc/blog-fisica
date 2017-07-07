@@ -19,7 +19,9 @@ n    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- custom css -->
+    <link rel="stylesheet" href="/static/css/bootstrap-datetimepicker.min.css" />
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -89,7 +91,7 @@ n    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet
                 class_="login-form") %}
               {{ macros.render_field(form.title, placeholder='Título') }}
               {{ macros.render_field(form.subtitle, placeholder='Subtítulo') }}
-              {{ macros.render_field(form.publish_date, placeholder='Fecha de publicación') }}
+              {{ macros.render_date_field(form.publish_date, placeholder='Fecha de publicación') }}
               {{ macros.render_field(form.content, placeholder='Contenido') }}
             {% endcall %}
           </div>
@@ -140,6 +142,8 @@ n    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet
     <script src="/static/vendor/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
+    <!-- <script type="text/javascript" src="/static/vendor/bootstrap/js/transition.js"></script>
+         <script type="text/javascript" src="/static/vendor/bootstrap/js/collapse.js"></script> -->
     <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- Contact Form JavaScript -->
@@ -148,12 +152,24 @@ n    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet
 
     <!-- Theme JavaScript -->
     <script src="/static/js/clean-blog.min.js"></script>
+
+    <!-- custom JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
+    <script>
+     moment().format();
+    </script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.js"></script>
     <script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
-    <script src='/static/js/tinymce/tinymce.min.js'></script>
     <script>
      tinymce.init({
          selector: '#content'
      });
+    </script>
+
+    <script type="text/javascript">
+      $(function () {
+      $('#publish_date').datetimepicker();
+      });
     </script>
 
   </body>
