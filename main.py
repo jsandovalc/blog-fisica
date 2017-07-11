@@ -91,10 +91,7 @@ class Post(HTTPMethodView):
             ))
 
             return response.redirect('/')
-        print('error!!')
-        for fieldName, errorMessages in form.errors.items():
-            for err in errorMessages:
-                print(err)
+
         return response.redirect('/404')
 
 
