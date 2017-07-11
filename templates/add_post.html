@@ -89,6 +89,7 @@ n    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet
             {% import 'macros.html' as macros %}
             {% call macros.render_form(form, action_text="Crear",
                 class_="login-form") %}
+              {{ form.csrf_token }}
               {{ macros.render_field(form.title, placeholder='Título') }}
               {{ macros.render_field(form.subtitle, placeholder='Subtítulo') }}
               {{ macros.render_date_field(form.publish_date, placeholder='Fecha de publicación') }}
