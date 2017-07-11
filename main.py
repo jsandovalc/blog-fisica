@@ -61,7 +61,6 @@ async def posts(request):
 @app.route("/post/<slug>")
 async def post(request, slug):
     post = await db.blog_fisica.post.find_one({'slug': slug})
-    post['content'] = json.loads(post['content'])
     return jinja.render('post.html', request, post=post)
 
 
