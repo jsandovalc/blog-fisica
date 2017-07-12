@@ -80,7 +80,6 @@ class Post(HTTPMethodView):
         form = PostForm(request)
 
         if form.validate_on_submit():
-            print('publish_date', form.publish_date.data)
             await db.blog_fisica.post.insert_one(dict(
                 title=form.title.data,
                 subtitle=form.subtitle.data,
