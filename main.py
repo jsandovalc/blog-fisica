@@ -1,4 +1,3 @@
-import json
 import pymongo
 import wtforms
 from wtforms import validators, widgets
@@ -64,7 +63,7 @@ async def post(request, slug):
     return jinja.render('post.html', request, post=post)
 
 
-class Post(HTTPMethodView):
+class Posts(HTTPMethodView):
     """A post in admin.
 
     It allows to create and store a post.
@@ -94,8 +93,38 @@ class Post(HTTPMethodView):
         return response.redirect('/404')
 
 
-app.add_route(Post.as_view(), '/admin/post')
+class Post(HTTPMethodView):
+    async def get(self, request, slug):
+        """Return the form with data."""
+        post = await db.blog_fisica.post.find_one(dict(
+            slug=slug
+        ))
+        form = PostForm(request, **post)
+        return jinja.render('edit_post.html', request, form=form)
 
+    async def post(self, request, slug):
+        """Updates the post"""
+        form = PostForm(request)
+
+        if form.validate_on_submit():
+            r = await db.blog_fisica.post.update_one(
+                {'slug': slug},
+                {'$set': dict(
+                    title=form.title.data,
+                    subtitle=form.subtitle.data,
+                    publish_date=form.publish_date.data,
+                    draft=False,
+                    content=form.content.data,
+                )
+            })
+
+            return response.redirect(app.url_for('post', slug=slug))
+
+        return response.redirect('/404')
+
+
+app.add_route(Posts.as_view(), '/admin/post')
+app.add_route(Post.as_view(), '/admin/post/<slug>')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=7000, debug=True)

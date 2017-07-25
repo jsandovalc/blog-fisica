@@ -74,7 +74,7 @@ Example usage:
         <label for="{{ field.id }}" class="control-label">{{ field.label }}</label>
       {% endif %}
       <div class='input-group date' id='{{ field.id }}'>
-      <input type='text' class="form-control" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}" " />
+      {{ field(class_='form-control', **kwargs) }}
       <span class="input-group-addon">
         <span class="glyphicon glyphicon-calendar"></span>
       </span>
