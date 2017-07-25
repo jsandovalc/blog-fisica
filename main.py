@@ -62,6 +62,14 @@ async def post(request, slug):
     post = await db.blog_fisica.post.find_one({'slug': slug})
     return jinja.render('post.html', request, post=post)
 
+@app.route("/admin/posts/")
+async def list_posts(request):
+    """Show a table with all posts."""
+    posts = await db.blog_fisica.post.find(
+        {'draft': False}).sort('publish_date', pymongo.DESCENDING).to_list(
+            length=10)
+    return jinja.render('list_posts.html', request, posts=posts)
+
 
 class Posts(HTTPMethodView):
     """A post in admin.
