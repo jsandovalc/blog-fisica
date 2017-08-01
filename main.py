@@ -29,8 +29,9 @@ class PostForm(SanicForm):
 
 
 class QuestionForm(SanicForm):
-    content = wtforms.StringField('Pregunta', widget=widgets.TextArea())
-    answers = wtforms.FieldList(wtforms.TextAreaField('Respuesta'))
+    content = wtforms.TextAreaField('Pregunta')
+    answers = wtforms.FieldList(wtforms.TextAreaField('Respuesta'),
+                                min_entries=2)
 
 
 session = {}
@@ -111,6 +112,8 @@ class Questions(HTTPMethodView):
     """A question for posts."""
     async def get(self, request):
         """Return the form"""
+        form = QuestionForm(request)
+        return jinja.render('add_question.html', request, form=form)
 
 
 class Post(HTTPMethodView):
@@ -145,6 +148,7 @@ class Post(HTTPMethodView):
 
 app.add_route(Posts.as_view(), '/admin/post')
 app.add_route(Post.as_view(), '/admin/post/<slug>')
+app.add_route(Questions.as_view(), '/admin/question')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=7000, debug=True)
