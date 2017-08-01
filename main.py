@@ -25,7 +25,12 @@ class PostForm(SanicForm):
     slug = wtforms.StringField('Cadena legible')
     publish_date = wtforms.DateTimeField('Fecha de publicación',
                                          format="%m/%d/%Y %H:%M %p")
-    content = wtforms.StringField('Contenido', widget=widgets.TextArea())
+    content = wtforms.TextAreaField('Contenido')
+
+
+class QuestionForm(SanicForm):
+    content = wtforms.StringField('Pregunta', widget=widgets.TextArea())
+    answers = wtforms.FieldList(wtforms.TextAreaField('Respuesta'))
 
 
 session = {}
@@ -61,6 +66,7 @@ async def posts(request):
 async def post(request, slug):
     post = await db.blog_fisica.post.find_one({'slug': slug})
     return jinja.render('post.html', request, post=post)
+
 
 @app.route("/admin/posts/")
 async def list_posts(request):
@@ -101,6 +107,12 @@ class Posts(HTTPMethodView):
         return response.redirect('/404')
 
 
+class Questions(HTTPMethodView):
+    """A question for posts."""
+    async def get(self, request):
+        """Return the form"""
+
+
 class Post(HTTPMethodView):
     async def get(self, request, slug):
         """Return the form with data."""
@@ -110,12 +122,12 @@ class Post(HTTPMethodView):
         form = PostForm(request, **post)
         return jinja.render('edit_post.html', request, form=form)
 
-    async def post(self, request, slug):
+    async def popst(self, request, slug):
         """Updates the post"""
         form = PostForm(request)
 
         if form.validate_on_submit():
-            r = await db.blog_fisica.post.update_one(
+            await db.blog_fisica.post.update_one(
                 {'slug': slug},
                 {'$set': dict(
                     title=form.title.data,
@@ -124,7 +136,7 @@ class Post(HTTPMethodView):
                     draft=False,
                     content=form.content.data,
                 )
-            })
+                })
 
             return response.redirect(app.url_for('post', slug=slug))
 
