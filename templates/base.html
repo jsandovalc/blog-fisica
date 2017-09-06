@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Clean Blog</title>
+    <title>{% block title %}Arquímides{% endblock %}</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -42,23 +42,20 @@
             <span class="sr-only">Toggle navigation</span>
             Menu <i class="fa fa-bars"></i>
           </button>
-          <a class="navbar-brand" href="{{ app.url_for('index') }}">Start Bootstrap</a>
+
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="index.html">Home</a>
+              <a href="{{ app.url_for('index') }}">Inicio</a>
             </li>
             <li>
-              <a href="about.html">About</a>
+              <a href="about.html">Acerca de</a>
             </li>
             <li>
-              <a href="post.html">Sample Post</a>
-            </li>
-            <li>
-              <a href="contact.html">Contact</a>
+              <a href="contact.html">Contacto</a>
             </li>
           </ul>
         </div>
@@ -73,22 +70,25 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="site-heading">
-              <h1>Clean Blog</h1>
-              <hr class="small">
-              <span class="subheading">A Clean Blog Theme by Start Bootstrap</span>
+            {% block site_heading %}
+              <div class="site-heading">
+                <h1>{% block post_title %}Arquímedes{% endblock %}</h1>
+                {% block post_subtitle %}<hr class="small">{% endblock  %}
+                <span class="subheading">"Dadme un punto de apoyo..."</span>
             </div>
+            {% endblock %}
           </div>
         </div>
       </div>
     </header>
 
     <!-- Main Content -->
-    <div class="container">
+    {% block main %}
+      <div class="container">
       <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            {% block content %}
-            {% endblock %}
+          {% block content %}
+          {% endblock %}
           <!-- Pager -->
           <ul class="pager">
             <li class="next">
@@ -98,7 +98,7 @@
         </div>
       </div>
     </div>
-
+    {% endblock main %}
     <hr>
 
     <!-- Footer -->
