@@ -47,23 +47,6 @@ async def add_session(request):
     request['session'] = session
 
 
-LOGIN_FORM = '''
-<h2>Please sign in, you can try:</h2>
-<dl>
-<dt>Username</dt> <dd>demo</dd>
-<dt>Password</dt> <dd>1234</dd>
-</dl>
-<p>{}</p>
-<form action="" method="POST">
-  <input class="username" id="name" name="username"
-    placeholder="username" type="text" value=""><br>
-  <input class="password" id="password" name="password"
-    placeholder="password" type="password" value=""><br>
-  <input id="submit" name="submit" type="submit" value="Sign In">
-</form>
-'''
-
-
 @app.route('/login', methods=['GET', 'POST'])
 async def login(request):
     message = ''
@@ -79,7 +62,7 @@ async def login(request):
             auth.login_user(request, user)
             return response.redirect('/')
         message = 'invalid username or password'
-    return response.html(LOGIN_FORM.format(message))
+    return jinja.render('login.html', request, message=message)
 
 
 @app.route('/logout')
