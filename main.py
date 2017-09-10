@@ -1,21 +1,26 @@
 import pymongo
 import wtforms
-from wtforms import validators, widgets
+from wtforms import validators
 from sanic import Sanic, response
 from sanic.views import HTTPMethodView
 from sanic_jinja2 import SanicJinja2
 from sanic_wtf import SanicForm
+from sanic_auth import Auth, User
 from motor import motor_asyncio
 from slugify import slugify
 
 
 app = Sanic(__name__)
-jinja = SanicJinja2(app)
 db = None
 
-app.config['WTF_CSRF_SECRET_KEY'] = 'the super secret'
+
+app.config.WTF_CSRF_SECRET_KEY = 'the super secret'
+app.config.AUTH_LOGIN_ENDPOINT = 'login'
 
 app.static('/static', './static')
+
+auth = Auth(app)
+jinja = SanicJinja2(app)
 
 
 class PostForm(SanicForm):
@@ -42,8 +47,49 @@ async def add_session(request):
     request['session'] = session
 
 
+LOGIN_FORM = '''
+<h2>Please sign in, you can try:</h2>
+<dl>
+<dt>Username</dt> <dd>demo</dd>
+<dt>Password</dt> <dd>1234</dd>
+</dl>
+<p>{}</p>
+<form action="" method="POST">
+  <input class="username" id="name" name="username"
+    placeholder="username" type="text" value=""><br>
+  <input class="password" id="password" name="password"
+    placeholder="password" type="password" value=""><br>
+  <input id="submit" name="submit" type="submit" value="Sign In">
+</form>
+'''
+
+
+@app.route('/login', methods=['GET', 'POST'])
+async def login(request):
+    message = ''
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        # for demonstration purpose only, you should use more robust method
+        if username == 'demo' and password == '1234':
+            # use User proxy in sanic_auth, this should be some ORM model
+            # object in production, the default implementation of
+            # auth.login_user expects User.id and User.name available
+            user = User(id=1, name=username)
+            auth.login_user(request, user)
+            return response.redirect('/')
+        message = 'invalid username or password'
+    return response.html(LOGIN_FORM.format(message))
+
+
+@app.route('/logout')
+@auth.login_required
+async def logout(request):
+    auth.logout_user(request)
+    return response.redirect('/login')
+
+
 async def setup_db():
-    """"""
     global db
     db = motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27017')
 
@@ -84,6 +130,8 @@ class Posts(HTTPMethodView):
     It allows to create and store a post.
 
     """
+    decorators = [auth.login_required(user_keyword='user')]
+
     async def get(self, request):
         """Return the form."""
         form = PostForm(request)
@@ -110,6 +158,8 @@ class Posts(HTTPMethodView):
 
 class Questions(HTTPMethodView):
     """A question for posts."""
+    decorators = [auth.login_required(user_keyword='user')]
+
     async def get(self, request):
         """Return the form"""
         form = QuestionForm(request)
@@ -117,6 +167,8 @@ class Questions(HTTPMethodView):
 
 
 class Post(HTTPMethodView):
+    decorators = [auth.login_required(user_keyword='user')]
+
     async def get(self, request, slug):
         """Return the form with data."""
         post = await db.blog_fisica.post.find_one(dict(
@@ -125,7 +177,7 @@ class Post(HTTPMethodView):
         form = PostForm(request, **post)
         return jinja.render('edit_post.html', request, form=form)
 
-    async def popst(self, request, slug):
+    async def post(self, request, slug):
         """Updates the post"""
         form = PostForm(request)
 
