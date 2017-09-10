@@ -130,7 +130,7 @@ class Posts(HTTPMethodView):
     It allows to create and store a post.
 
     """
-    decorators = [auth.login_required(user_keyword='user')]
+    decorators = [auth.login_required]
 
     async def get(self, request):
         """Return the form."""
@@ -158,7 +158,7 @@ class Posts(HTTPMethodView):
 
 class Questions(HTTPMethodView):
     """A question for posts."""
-    decorators = [auth.login_required(user_keyword='user')]
+    decorators = [auth.login_required]
 
     async def get(self, request):
         """Return the form"""
@@ -167,7 +167,7 @@ class Questions(HTTPMethodView):
 
 
 class Post(HTTPMethodView):
-    decorators = [auth.login_required(user_keyword='user')]
+    decorators = [auth.login_required]
 
     async def get(self, request, slug):
         """Return the form with data."""
