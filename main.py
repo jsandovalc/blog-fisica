@@ -115,6 +115,12 @@ async def list_posts(request):
     return jinja.render('list_posts.html', request, posts=posts)
 
 
+@app.route("/about/")
+async def about(request):
+    """Show the about"""
+    return jinja.render('about.html', request)
+
+
 class Posts(HTTPMethodView):
     """A post in admin.
 
