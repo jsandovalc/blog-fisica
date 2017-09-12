@@ -39,6 +39,14 @@ class QuestionForm(SanicForm):
                                 min_entries=2)
 
 
+class LoginForm(SanicForm):
+    username = wtforms.StringField(
+        'Usuario', validators=[validators.InputRequired()])
+    password = wtforms.PasswordField(
+        'Contraseña', validators=[validators.InputRequired()])
+    submit = wtforms.SubmitField('Ingresar')
+
+
 session = {}
 
 
@@ -50,14 +58,14 @@ async def add_session(request):
 @app.route('/login', methods=['GET', 'POST'])
 async def login(request):
     message = ''
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        # for demonstration purpose only, you should use more robust method
-        if username == 'demo' and password == '1234':
-            # use User proxy in sanic_auth, this should be some ORM model
-            # object in production, the default implementation of
-            # auth.login_user expects User.id and User.name available
+    form = LoginForm(request)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+
+        user = await db.blog_fisica.user.find_one(dict(username=username,
+                                            password=password))
+        if user:
             user = User(id=1, name=username)
             auth.login_user(request, user)
             return response.redirect('/')
