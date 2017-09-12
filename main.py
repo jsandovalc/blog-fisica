@@ -70,7 +70,7 @@ async def login(request):
             auth.login_user(request, user)
             return response.redirect('/')
         message = 'invalid username or password'
-    return jinja.render('login.html', request, message=message)
+    return jinja.render('login.html', request, message=message, form=form)
 
 
 @app.route('/logout')
