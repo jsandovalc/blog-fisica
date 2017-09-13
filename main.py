@@ -31,6 +31,7 @@ class PostForm(SanicForm):
     publish_date = wtforms.DateTimeField('Fecha de publicación',
                                          format="%m/%d/%Y %H:%M %p")
     content = wtforms.TextAreaField('Contenido')
+    tags = wtforms.StringField('Etiquetas')
 
 
 class QuestionForm(SanicForm):
@@ -121,6 +122,10 @@ async def about(request):
     return jinja.render('about.html', request)
 
 
+def get_tags_list(tag_string):
+    return list(set(tag.strip().lower() for
+                    tag in tag_string.split(',')))
+
 class Posts(HTTPMethodView):
     """A post in admin.
 
@@ -146,6 +151,7 @@ class Posts(HTTPMethodView):
                 slug=slugify(form.title.data),
                 draft=False,
                 content=form.content.data,
+                tags=get_tags_list(form.content.tags)
             ))
 
             return response.redirect('/')
