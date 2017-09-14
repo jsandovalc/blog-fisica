@@ -151,7 +151,7 @@ class Posts(HTTPMethodView):
                 slug=slugify(form.title.data),
                 draft=False,
                 content=form.content.data,
-                tags=get_tags_list(form.content.tags)
+                tags=get_tags_list(form.tags.data)
             ))
 
             return response.redirect('/')
