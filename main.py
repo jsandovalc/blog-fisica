@@ -8,6 +8,7 @@ from sanic_wtf import SanicForm
 from sanic_auth import Auth, User
 from motor import motor_asyncio
 from slugify import slugify
+from delorean import Delorean
 
 
 app = Sanic(__name__)
@@ -65,7 +66,7 @@ async def login(request):
         password = form.password.data
 
         user = await db.blog_fisica.user.find_one(dict(username=username,
-                                            password=password))
+                                                       password=password))
         if user:
             user = User(id=1, name=username)
             auth.login_user(request, user)
@@ -91,8 +92,8 @@ app.add_task(setup_db())
 @app.route("/")
 async def index(request):
     posts = await db.blog_fisica.post.find(
-        {'draft': False}).sort('publish_date', pymongo.DESCENDING).to_list(
-            length=10)
+        dict(draft=False, publish_date={'$lte': Delorean().datetime})).sort(
+            'publish_date', pymongo.DESCENDING).to_list(length=10)
     return jinja.render('index.html', request, posts=posts)
 
 
@@ -126,6 +127,7 @@ def get_tags_list(tag_string):
     return list(set(tag.strip().lower() for
                     tag in tag_string.split(',')))
 
+
 class Posts(HTTPMethodView):
     """A post in admin.
 
@@ -147,7 +149,7 @@ class Posts(HTTPMethodView):
             await db.blog_fisica.post.insert_one(dict(
                 title=form.title.data,
                 subtitle=form.subtitle.data,
-                publish_date=form.publish_date.data,
+                publish_date=Delorean(form.publish_date.data, 'UTC').datetime,
                 slug=slugify(form.title.data),
                 draft=False,
                 content=form.content.data,
