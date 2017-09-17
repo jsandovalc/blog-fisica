@@ -109,6 +109,7 @@ async def post(request, slug):
 
 
 @app.route("/admin/posts/")
+@auth.login_required
 async def list_posts(request):
     """Show a table with all posts."""
     posts = await db.blog_fisica.post.find(
