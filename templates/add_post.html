@@ -28,3 +28,34 @@
       </div>
   </article>
 {% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="/static/css/bootstrap-datetimepicker.min.css" />
+{% endblock extra_css %}
+
+{% block extra_js %}
+  <!-- custom JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
+  <script>
+   moment().format();
+  </script>
+  <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.js"></script>
+  <script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
+  <script>
+   tinymce.init({
+       selector: '#content',
+       menubar: false,
+       plugins: 'code autoresize codesample fullscreen image link table wordcount',
+       toolbar: ['undo redo | styleselect | formatselect | bold italic underline strikethrough | alignleft aligncenter alignright | link image | subscript superscript | removeformat | blockquote | numlist bullist',
+                 'code codesample | image link table | fullscreen'],
+       image_caption: true,
+       image_advtab: true
+   });
+  </script>
+
+  <script type="text/javascript">
+   $(function () {
+       $('#publish_date').datetimepicker();
+   });
+  </script>
+{% endblock extra_js %}
