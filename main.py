@@ -180,9 +180,10 @@ class Post(HTTPMethodView):
         post = await db.blog_fisica.post.find_one(dict(
             slug=slug
         ))
+        post['tags'] = ', '.join(post['tags'])
         form = PostForm(request, **post)
         return jinja.render('edit_post.html', request, form=form,
-                            action="Actualizar")
+                            action="Actualizar", post=post)
 
     async def post(self, request, slug):
         """Updates the post"""
