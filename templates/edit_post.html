@@ -1,3 +1,33 @@
+{% extends "add_post.html" %}
+
+{% block title %}Arquímedes - Edit post{% endblock %}
+
+{% block site_heading %}
+  <div class="post-heading">
+    <h1>Editar entrada: {{ post.title }}</h1>
+  </div>
+{% endblock %}
+
+{% block main %}
+  <article>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% import 'macros.html' as macros %}
+            {% call macros.render_form(form, action_text=action,
+                class_="login-form") %}
+              {{ form.csrf_token }}
+              {{ macros.render_field(form.title, placeholder='Título') }}
+              {{ macros.render_field(form.subtitle, placeholder='Subtítulo') }}
+              {{ macros.render_date_field(form.publish_date, placeholder='Fecha de publicación') }}
+              {{ macros.render_field(form.content, placeholder='Contenido') }}
+              {{ macros.render_field(form.tags, placeholder='Etiquetas') }}
+            {% endcall %}
+          </div>
+        </div>
+      </div>
+  </article>
+{% endblock %}
 <!DOCTYPE html>
 <html lang="en">
   <head>

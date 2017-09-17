@@ -14,7 +14,7 @@
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
             {% import 'macros.html' as macros %}
-            {% call macros.render_form(form, action_text="Crear",
+            {% call macros.render_form(form, action_text=action,
                 class_="login-form") %}
               {{ form.csrf_token }}
               {{ macros.render_field(form.title, placeholder='Título') }}
