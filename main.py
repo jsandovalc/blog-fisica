@@ -140,7 +140,7 @@ class Posts(HTTPMethodView):
     async def get(self, request):
         """Return the form."""
         form = PostForm(request)
-        return jinja.render('add_post.html', request, form=form)
+        return jinja.render('add_post.html', request, form=form, action='Crear')
 
     async def post(self, request):
         """Save the post."""
@@ -181,7 +181,8 @@ class Post(HTTPMethodView):
             slug=slug
         ))
         form = PostForm(request, **post)
-        return jinja.render('edit_post.html', request, form=form)
+        return jinja.render('edit_post.html', request, form=form,
+                            action="Actualizar")
 
     async def post(self, request, slug):
         """Updates the post"""
@@ -196,6 +197,7 @@ class Post(HTTPMethodView):
                     publish_date=form.publish_date.data,
                     draft=False,
                     content=form.content.data,
+                    tags=get_tags_list(form.tags.data)
                 )
                 })
 
