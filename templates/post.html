@@ -2,6 +2,12 @@
 
 {% block title %}Arquímedes - {{ post.title }}{% endblock %}
 
+{% block head_js %}
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+{% endblock head_js %}
+
 {% block site_heading %}
   <div class="post-heading">
     <h1>{{ post.title }}</h1>
