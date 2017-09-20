@@ -6,3 +6,4 @@ python-slugify==1.2.4
 Sanic-Auth==0.2.0
 sanic-session==0.1.5
 Delorean==0.6.0
+aiosmtplib==1.0.2
