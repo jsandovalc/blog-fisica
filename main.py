@@ -1,5 +1,9 @@
+import asyncio
 import pymongo
 import wtforms
+import aiosmtplib
+import config
+from email.mime.text import MIMEText
 from wtforms import validators
 from sanic import Sanic, response
 from sanic.views import HTTPMethodView
@@ -124,6 +128,40 @@ async def about(request):
     return jinja.render('about.html', request)
 
 
+@app.get("/contact/")
+async def contact(request):
+    """Return the contact form."""
+    return jinja.render("contact.html", request)
+
+
+@app.post("/contact/")
+async def post_contact(request):
+    print('posting', request.form)
+    host = config.mail_host
+    port = config.mail_port
+    user = config.mail_user
+    password = config.mail_password
+
+    loop = asyncio.get_event_loop()
+    server = aiosmtplib.SMTP(host, port, loop=loop, use_tls=False)
+
+    await server.connect()
+    await server.starttls()
+    await server.login(user, password)
+
+    message = MIMEText(
+        request.form.get('name') + '\n\n'
+        request.form.get('message') + '\n\n' +
+        ','.join(request.form['email']))
+    message['From'] = user
+    message['To'] = user
+    message['Subject'] = 'Mensaje recibido en el blog de Arquímedes'
+
+    await server.send_message(message)
+
+    return response.json({'message': 'Mail sent'}, status=201)
+
+
 def get_tags_list(tag_string):
     return list(set(tag.strip().lower() for
                     tag in tag_string.split(',')))
@@ -140,7 +178,8 @@ class Posts(HTTPMethodView):
     async def get(self, request):
         """Return the form."""
         form = PostForm(request)
-        return jinja.render('add_post.html', request, form=form, action='Crear')
+        return jinja.render('add_post.html', request, form=form,
+                            action='Crear')
 
     async def post(self, request):
         """Save the post."""
