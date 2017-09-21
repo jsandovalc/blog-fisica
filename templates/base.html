@@ -2,12 +2,14 @@
 <html lang="en">
 
   <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
+    <meta name="description" content="Blog sobre ciencias fisico-matemáticas y afines">
     <meta name="author" content="">
+    {% block meta %}
+      <meta name="keywords" content="Matemáticas,física,Arquímedes,ciencia,divulgación">
+    {% endblock meta %}
 
     <title>{% block title %}Arquímedes{% endblock %}</title>
 
@@ -82,7 +84,7 @@
                 <h1>{% block post_title %}Arquímedes{% endblock %}</h1>
                 {% block post_subtitle %}<hr class="small">{% endblock  %}
                 <span class="subheading">"Dadme un punto de apoyo..."</span>
-            </div>
+              </div>
             {% endblock %}
           </div>
         </div>
@@ -92,19 +94,19 @@
     <!-- Main Content -->
     {% block main %}
       <div class="container">
-      <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-          {% block content %}
-          {% endblock %}
-          <!-- Pager -->
-          <ul class="pager">
-            <li class="next">
-              <a href="#">Entradas anteriores &rarr;</a>
-            </li>
-          </ul>
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {% block content %}
+            {% endblock %}
+            <!-- Pager -->
+            <ul class="pager">
+              <li class="next">
+                <a href="#">Entradas anteriores &rarr;</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
     {% endblock main %}
     <hr>
 

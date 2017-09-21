@@ -2,6 +2,10 @@
 
 {% block title %}Arquímedes - {{ post.title }}{% endblock %}
 
+{% block meta %}
+  <meta name="keywords" content="{{ ','.join(post.tags) }}" />
+{% endblock meta %}
+
 {% block head_js %}
   <script type="text/javascript" async
     src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
