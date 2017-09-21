@@ -150,7 +150,7 @@ async def post_contact(request):
     await server.login(user, password)
 
     message = MIMEText(
-        request.form.get('name') + '\n\n'
+        request.form.get('name') + '\n\n' +
         request.form.get('message') + '\n\n' +
         ','.join(request.form['email']))
     message['From'] = user
