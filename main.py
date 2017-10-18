@@ -15,240 +15,235 @@ from slugify import slugify
 from delorean import Delorean
 
 
-app = Sanic(__name__)
-db = None
+def build_app():
+    app = Sanic(__name__)
+    db = None
 
+    app.config.WTF_CSRF_SECRET_KEY = 'the super secret'
+    app.config.AUTH_LOGIN_ENDPOINT = 'login'
 
-app.config.WTF_CSRF_SECRET_KEY = 'the super secret'
-app.config.AUTH_LOGIN_ENDPOINT = 'login'
+    app.static('/static', './static')
 
-app.static('/static', './static')
+    auth = Auth(app)
+    jinja = SanicJinja2(app)
 
-auth = Auth(app)
-jinja = SanicJinja2(app)
+    class PostForm(SanicForm):
+        title = wtforms.StringField('Título', validators=[
+            validators.DataRequired()])
+        subtitle = wtforms.StringField('Subtítulo')
+        slug = wtforms.StringField('Cadena legible')
+        publish_date = wtforms.DateTimeField('Fecha de publicación',
+                                             format="%m/%d/%Y %H:%M %p")
+        content = wtforms.TextAreaField('Contenido')
+        tags = wtforms.StringField('Etiquetas')
 
+    class QuestionForm(SanicForm):
+        content = wtforms.TextAreaField('Pregunta')
+        answers = wtforms.FieldList(wtforms.TextAreaField('Respuesta'),
+                                    min_entries=2)
 
-class PostForm(SanicForm):
-    title = wtforms.StringField('Título', validators=[
-        validators.DataRequired()])
-    subtitle = wtforms.StringField('Subtítulo')
-    slug = wtforms.StringField('Cadena legible')
-    publish_date = wtforms.DateTimeField('Fecha de publicación',
-                                         format="%m/%d/%Y %H:%M %p")
-    content = wtforms.TextAreaField('Contenido')
-    tags = wtforms.StringField('Etiquetas')
+    class LoginForm(SanicForm):
+        username = wtforms.StringField(
+            'Usuario', validators=[validators.InputRequired()])
+        password = wtforms.PasswordField(
+            'Contraseña', validators=[validators.InputRequired()])
+        submit = wtforms.SubmitField('Ingresar')
 
+    session = {}
 
-class QuestionForm(SanicForm):
-    content = wtforms.TextAreaField('Pregunta')
-    answers = wtforms.FieldList(wtforms.TextAreaField('Respuesta'),
-                                min_entries=2)
+    @app.middleware('request')
+    async def add_session(request):
+        request['session'] = session
 
+    @app.route('/login', methods=['GET', 'POST'])
+    async def login(request):
+        message = ''
+        form = LoginForm(request)
+        if request.method == 'POST' and form.validate():
+            username = form.username.data
+            password = form.password.data
 
-class LoginForm(SanicForm):
-    username = wtforms.StringField(
-        'Usuario', validators=[validators.InputRequired()])
-    password = wtforms.PasswordField(
-        'Contraseña', validators=[validators.InputRequired()])
-    submit = wtforms.SubmitField('Ingresar')
+            user = await db.blog_fisica.user.find_one(dict(username=username,
+                                                           password=password))
+            if user:
+                user = User(id=1, name=username)
+                auth.login_user(request, user)
+                return response.redirect('/')
+            message = 'invalid username or password'
+        return jinja.render('login.html', request, message=message, form=form)
 
+    @app.route('/logout')
+    @auth.login_required
+    async def logout(request):
+        auth.logout_user(request)
+        return response.redirect('/login')
 
-session = {}
+    async def setup_db():
+        nonlocal db
+        db = motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27017')
 
+    app.add_task(setup_db())
 
-@app.middleware('request')
-async def add_session(request):
-    request['session'] = session
+    @app.route("/")
+    async def index(request):
+        posts = await db.blog_fisica.post.find(
+            dict(draft=False, publish_date={
+                '$lte': Delorean().datetime})).sort(
+                'publish_date', pymongo.DESCENDING).to_list(length=10)
+        return jinja.render('index.html', request, posts=posts)
 
+    @app.route("/post")
+    async def posts(request):
+        return jinja.render('post.html', request)
 
-@app.route('/login', methods=['GET', 'POST'])
-async def login(request):
-    message = ''
-    form = LoginForm(request)
-    if request.method == 'POST' and form.validate():
-        username = form.username.data
-        password = form.password.data
+    @app.route("/post/<slug>")
+    async def post(request, slug):
+        post = await db.blog_fisica.post.find_one({'slug': slug})
+        return jinja.render('post.html', request, post=post)
 
-        user = await db.blog_fisica.user.find_one(dict(username=username,
-                                                       password=password))
-        if user:
-            user = User(id=1, name=username)
-            auth.login_user(request, user)
-            return response.redirect('/')
-        message = 'invalid username or password'
-    return jinja.render('login.html', request, message=message, form=form)
+    @app.route("/admin/posts/")
+    @auth.login_required
+    async def list_posts(request):
+        """Show a table with all posts."""
+        posts = await db.blog_fisica.post.find(
+            {'draft': False}).sort('publish_date', pymongo.DESCENDING).to_list(
+                length=10)
+        return jinja.render('list_posts.html', request, posts=posts)
 
+    @app.route("/about/")
+    async def about(request):
+        """Show the about"""
+        return jinja.render('about.html', request)
 
-@app.route('/logout')
-@auth.login_required
-async def logout(request):
-    auth.logout_user(request)
-    return response.redirect('/login')
+    @app.get("/contact/")
+    async def contact(request):
+        """Return the contact form."""
+        return jinja.render("contact.html", request)
 
+    @app.post("/contact/")
+    async def post_contact(request):
+        print('posting', request.form)
+        host = config.mail_host
+        port = config.mail_port
+        user = config.mail_user
+        password = config.mail_password
 
-async def setup_db():
-    global db
-    db = motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27017')
+        loop = asyncio.get_event_loop()
+        server = aiosmtplib.SMTP(host, port, loop=loop, use_tls=False)
 
-app.add_task(setup_db())
+        await server.connect()
+        await server.starttls()
+        await server.login(user, password)
 
+        message = MIMEText(
+            request.form.get('name') + '\n\n' +
+            request.form.get('message') + '\n\n' +
+            ','.join(request.form['email']))
+        message['From'] = user
+        message['To'] = user
+        message['Subject'] = 'Mensaje recibido en el blog de Arquímedes'
 
-@app.route("/")
-async def index(request):
-    posts = await db.blog_fisica.post.find(
-        dict(draft=False, publish_date={'$lte': Delorean().datetime})).sort(
-            'publish_date', pymongo.DESCENDING).to_list(length=10)
-    return jinja.render('index.html', request, posts=posts)
+        await server.send_message(message)
 
+        return response.json({'message': 'Mail sent'}, status=201)
 
-@app.route("/post")
-async def posts(request):
-    return jinja.render('post.html', request)
+    def get_tags_list(tag_string):
+        return list(set(tag.strip().lower() for
+                        tag in tag_string.split(',')))
 
+    class Posts(HTTPMethodView):
+        """A post in admin.
 
-@app.route("/post/<slug>")
-async def post(request, slug):
-    post = await db.blog_fisica.post.find_one({'slug': slug})
-    return jinja.render('post.html', request, post=post)
+        It allows to create and store a post.
 
+        """
+        decorators = [auth.login_required]
 
-@app.route("/admin/posts/")
-@auth.login_required
-async def list_posts(request):
-    """Show a table with all posts."""
-    posts = await db.blog_fisica.post.find(
-        {'draft': False}).sort('publish_date', pymongo.DESCENDING).to_list(
-            length=10)
-    return jinja.render('list_posts.html', request, posts=posts)
+        async def get(self, request):
+            """Return the form."""
+            form = PostForm(request)
+            return jinja.render('add_post.html', request, form=form,
+                                action='Crear')
 
+        async def post(self, request):
+            """Save the post."""
+            form = PostForm(request)
 
-@app.route("/about/")
-async def about(request):
-    """Show the about"""
-    return jinja.render('about.html', request)
+            if form.validate_on_submit():
+                slug = slugify(form.title.data)
 
+                post = await db.blog_fisica.post.find_one(dict(slug=slug))
 
-@app.get("/contact/")
-async def contact(request):
-    """Return the contact form."""
-    return jinja.render("contact.html", request)
+                suffix = 0
+                while post:
+                    slug = slugify(f'{form.title.data}-{suffix}')
+                    post = await db.blog_fisica.post.find_one(dict(slug=slug))
+                    suffix += 1
 
-
-@app.post("/contact/")
-async def post_contact(request):
-    print('posting', request.form)
-    host = config.mail_host
-    port = config.mail_port
-    user = config.mail_user
-    password = config.mail_password
-
-    loop = asyncio.get_event_loop()
-    server = aiosmtplib.SMTP(host, port, loop=loop, use_tls=False)
-
-    await server.connect()
-    await server.starttls()
-    await server.login(user, password)
-
-    message = MIMEText(
-        request.form.get('name') + '\n\n' +
-        request.form.get('message') + '\n\n' +
-        ','.join(request.form['email']))
-    message['From'] = user
-    message['To'] = user
-    message['Subject'] = 'Mensaje recibido en el blog de Arquímedes'
-
-    await server.send_message(message)
-
-    return response.json({'message': 'Mail sent'}, status=201)
-
-
-def get_tags_list(tag_string):
-    return list(set(tag.strip().lower() for
-                    tag in tag_string.split(',')))
-
-
-class Posts(HTTPMethodView):
-    """A post in admin.
-
-    It allows to create and store a post.
-
-    """
-    decorators = [auth.login_required]
-
-    async def get(self, request):
-        """Return the form."""
-        form = PostForm(request)
-        return jinja.render('add_post.html', request, form=form,
-                            action='Crear')
-
-    async def post(self, request):
-        """Save the post."""
-        form = PostForm(request)
-
-        if form.validate_on_submit():
-            await db.blog_fisica.post.insert_one(dict(
-                title=form.title.data,
-                subtitle=form.subtitle.data,
-                publish_date=Delorean(form.publish_date.data, 'UTC').datetime,
-                slug=slugify(form.title.data),
-                draft=False,
-                content=form.content.data,
-                tags=get_tags_list(form.tags.data)
-            ))
-
-            return response.redirect('/')
-
-        return response.redirect('/404')
-
-
-class Questions(HTTPMethodView):
-    """A question for posts."""
-    decorators = [auth.login_required]
-
-    async def get(self, request):
-        """Return the form"""
-        form = QuestionForm(request)
-        return jinja.render('add_question.html', request, form=form)
-
-
-class Post(HTTPMethodView):
-    decorators = [auth.login_required]
-
-    async def get(self, request, slug):
-        """Return the form with data."""
-        post = await db.blog_fisica.post.find_one(dict(
-            slug=slug
-        ))
-        post['tags'] = ', '.join(post['tags'])
-        form = PostForm(request, **post)
-        return jinja.render('edit_post.html', request, form=form,
-                            action="Actualizar", post=post)
-
-    async def post(self, request, slug):
-        """Updates the post"""
-        form = PostForm(request)
-
-        if form.validate_on_submit():
-            await db.blog_fisica.post.update_one(
-                {'slug': slug},
-                {'$set': dict(
+                await db.blog_fisica.post.insert_one(dict(
                     title=form.title.data,
                     subtitle=form.subtitle.data,
-                    publish_date=form.publish_date.data,
+                    publish_date=Delorean(
+                        form.publish_date.data, 'UTC').datetime,
+                    slug=slug,
                     draft=False,
                     content=form.content.data,
                     tags=get_tags_list(form.tags.data)
-                )
-                })
+                ))
 
-            return response.redirect(app.url_for('post', slug=slug))
+                return response.redirect('/')
 
-        return response.redirect('/404')
+            return response.redirect('/404')
 
+    class Questions(HTTPMethodView):
+        """A question for posts."""
+        decorators = [auth.login_required]
 
-app.add_route(Posts.as_view(), '/admin/post')
-app.add_route(Post.as_view(), '/admin/post/<slug>')
-app.add_route(Questions.as_view(), '/admin/question')
+        async def get(self, request):
+            """Return the form"""
+            form = QuestionForm(request)
+            return jinja.render('add_question.html', request, form=form)
+
+    class Post(HTTPMethodView):
+        decorators = [auth.login_required]
+
+        async def get(self, request, slug):
+            """Return the form with data."""
+            post = await db.blog_fisica.post.find_one(dict(
+                slug=slug
+            ))
+            post['tags'] = ', '.join(post['tags'])
+            form = PostForm(request, **post)
+            return jinja.render('edit_post.html', request, form=form,
+                                action="Actualizar", post=post)
+
+        async def post(self, request, slug):
+            """Updates the post"""
+            form = PostForm(request)
+
+            if form.validate_on_submit():
+                await db.blog_fisica.post.update_one(
+                    {'slug': slug},
+                    {'$set': dict(
+                        title=form.title.data,
+                        subtitle=form.subtitle.data,
+                        publish_date=form.publish_date.data,
+                        draft=False,
+                        content=form.content.data,
+                        tags=get_tags_list(form.tags.data)
+                    )
+                    })
+
+                return response.redirect(app.url_for('post', slug=slug))
+
+            return response.redirect('/404')
+
+    app.add_route(Posts.as_view(), '/admin/post')
+    app.add_route(Post.as_view(), '/admin/post/<slug>')
+    app.add_route(Questions.as_view(), '/admin/question')
+
+    return app
+
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=7000, debug=True)
+    build_app().run(host="0.0.0.0", port=7000, debug=True)
