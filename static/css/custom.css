@@ -3,3 +3,11 @@
   color: gray;
   font-style: italic;
 }
+
+.boxed {
+  border: 1px solid black;
+  padding-left: 15px;
+  padding-right: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
