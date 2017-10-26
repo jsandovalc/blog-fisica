@@ -1,3 +1,4 @@
+import locale
 import asyncio
 import pymongo
 import wtforms
@@ -16,6 +17,7 @@ from delorean import Delorean
 
 
 def build_app():
+    locale.setlocale(locale.LC_TIME, 'es_CO.utf8')
     app = Sanic(__name__)
     db = None
 
