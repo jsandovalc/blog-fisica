@@ -5,3 +5,4 @@ __pycache__/
 /static/media/
 /config.py
 .dir-locals.el
+/static/uploads/
