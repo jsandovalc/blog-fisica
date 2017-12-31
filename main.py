@@ -1,6 +1,8 @@
 import locale
+from pathlib import Path
 import asyncio
 import pymongo
+import shortuuid
 import wtforms
 import aiosmtplib
 import config
@@ -9,7 +11,7 @@ from wtforms import validators
 from sanic import Sanic, response
 from sanic.views import HTTPMethodView
 from sanic_jinja2 import SanicJinja2
-from sanic_wtf import SanicForm
+from sanic_wtf import SanicForm, FileAllowed, FileRequired
 from sanic_auth import Auth, User
 from motor import motor_asyncio
 from slugify import slugify
@@ -240,9 +242,39 @@ def build_app():
 
             return response.redirect('/404')
 
+    class ImageForm(SanicForm):
+        image = wtforms.fields.FileField('Imagen', validators=[
+            FileAllowed('jpg bpm png jpeg jpg gif'.split())])
+        submit = wtforms.SubmitField('Subir')
+
+    class Image(HTTPMethodView):
+        """Allow image uploading."""
+        decorators = [auth.login_required]
+
+        async def get(self, request):
+            """Return the upload image form."""
+            return jinja.render('upload_image.html', request,
+                                form=ImageForm(request))
+
+        async def post(self, request):
+            """Store the image in img uploads directory."""
+            form = ImageForm(request)
+
+            if form.validate_on_submit():
+                image = form.image.data
+
+                # MUST NOT trust path.
+                uploaded_file = Path('./static/uploads/img') / f'{shortuuid.uuid()}-{image.name}'
+                uploaded_file.write_bytes(image.body)
+
+                return response.redirect('/admin')
+
+            return response.redirect('/admin/image')
+
     app.add_route(Posts.as_view(), '/admin/post')
     app.add_route(Post.as_view(), '/admin/post/<slug>')
     app.add_route(Questions.as_view(), '/admin/question')
+    app.add_route(Image.as_view(), '/admin/image')
 
     return app
 
