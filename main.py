@@ -1,6 +1,7 @@
 import locale
 from pathlib import Path
 import asyncio
+import asyncio_redis
 import pymongo
 import shortuuid
 import wtforms
@@ -11,12 +12,31 @@ from wtforms import validators
 from sanic import Sanic, response
 from sanic.views import HTTPMethodView
 from sanic_jinja2 import SanicJinja2
-from sanic_wtf import SanicForm, FileAllowed, FileRequired
+from sanic_wtf import SanicForm, FileAllowed
 from sanic_auth import Auth, User
+from sanic_session import RedisSessionInterface
 from motor import motor_asyncio
 from slugify import slugify
 from delorean import Delorean
 
+
+
+class Redis:
+    """A simple wrapper class that allows you to share a connection pool
+    across your application.
+
+    Taken from: https://pythonhosted.org/sanic_session/using_the_interfaces.html
+
+    """
+    _pool = None
+
+    async def get_redis_pool(self):
+        if not self._pool:
+            self._pool = await asyncio_redis.Pool.create(
+                host='localhost', port=6379, poolsize=10
+            )
+
+        return self._pool
 
 def build_app():
     locale.setlocale(locale.LC_TIME, 'es_CO.utf8')
@@ -30,6 +50,10 @@ def build_app():
 
     auth = Auth(app)
     jinja = SanicJinja2(app)
+
+    redis = Redis()
+    # pass the getter method for the connection pool into the session
+    session_interface = RedisSessionInterface(redis.get_redis_pool)
 
     class PostForm(SanicForm):
         title = wtforms.StringField('Título', validators=[
@@ -53,11 +77,23 @@ def build_app():
             'Contraseña', validators=[validators.InputRequired()])
         submit = wtforms.SubmitField('Ingresar')
 
-    session = {}
-
     @app.middleware('request')
-    async def add_session(request):
-        request['session'] = session
+    async def add_session_to_request(request):
+        # before each request initialize a session
+        # using the client's request
+        await session_interface.open(request)
+
+
+    @app.middleware('response')
+    async def save_session(request, response):
+        # after each request save the session,
+        # pass the response to set client cookies
+        await session_interface.save(request, response)
+        session = {}
+
+    # @app.middleware('request')
+    # async def add_session(request):
+    #     request['session'] = session
 
     @app.route('/login', methods=['GET', 'POST'])
     async def login(request):
@@ -264,7 +300,8 @@ def build_app():
                 image = form.image.data
 
                 # MUST NOT trust path.
-                uploaded_file = Path('./static/uploads/img') / f'{shortuuid.uuid()}-{image.name}'
+                uploaded_file = (Path('./static/uploads/img') /
+                                 f'{shortuuid.uuid()}-{image.name}')
                 uploaded_file.write_bytes(image.body)
 
                 return response.redirect('/admin')
