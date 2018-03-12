@@ -300,11 +300,12 @@ def build_app():
                 image = form.image.data
 
                 # MUST NOT trust path.
-                uploaded_file = (Path('./static/uploads/img') /
-                                 f'{shortuuid.uuid()}-{image.name}')
+                file_path = (Path('./static/uploads/img') /
+                             f'{shortuuid.uuid()}-{image.name}')
+                uploaded_file = (file_path)
                 uploaded_file.write_bytes(image.body)
 
-                return response.redirect('/admin')
+                return response.text(str(file_path))
 
             return response.redirect('/admin/image')
 
