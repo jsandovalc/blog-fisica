@@ -1,0 +1,26 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+Sanic = "==0.5.4"
+"sanic-jinja2" = "==0.5.3"
+motor = "==1.1"
+Sanic-WTF = "==0.5.0"
+python-slugify = "==1.2.4"
+Sanic-Auth = "==0.2.0"
+sanic_session = "==0.1.5"
+Delorean = "==0.6.0"
+aiosmtplib = "==1.0.2"
+shortuuid = "==0.5.0"
+asyncio_redis = "==0.14.3"
+pytest-sanic = "==0.1.4"
+mongomock = "==3.8.0"
+
+
+[dev-packages]
+

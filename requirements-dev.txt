@@ -1,2 +1,0 @@
-pytest-sanic==0.1.4
-mongomock==3.8.0
