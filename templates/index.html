@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+
+{% block head_js %}
+  <script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+{% endblock head_js %}
+
+
 {% block content %}
   {% for post in posts %}
     <div class="post-preview">
