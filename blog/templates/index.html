@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block head_js %}
+  <script type="text/javascript" async
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+{% endblock head_js %}
+
+
+{% block content %}
+  {% for post in posts %}
+    <div class="post-preview">
+      <a href="{#{ app.url_for('post', slug=post.slug) }#}">
+        <h2 class="post-title">
+          {{ post.title }}
+        </h2>
+        <h3 class="post-subtitle">
+          {{ post.subtitle }}
+        </h3>
+      </a>
+      <p class="post-meta">Publicado en {{ post.publish_date.strftime('%B %d, %Y') }}</p>
+    </div>
+    <hr>
+  {% endfor %}
+{% endblock %}
