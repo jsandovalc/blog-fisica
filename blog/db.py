@@ -1,4 +1,27 @@
+import datetime as dt
 import aiopg.sa
+from sqlalchemy import Table, Column, Integer, String, MetaData, Boolean
+from sqlalchemy import DateTime, Text, ForeignKey
+
+
+metadata = MetaData()
+
+tags = Table('tags', metadata,
+             Column('id', Integer, primary_key=True),
+             Column('title', Text, nullable=False, unique=True))
+
+tags_posts = Table('tags_posts', metadata,
+                   Column('tag', Integer, ForeignKey('tags.id')),
+                   Column('post', Integer, ForeignKey('posts.id')))
+
+posts = Table('posts', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('title', String, nullable=False),
+              Column('subtitle', String),
+              Column('slug', String, nullable=False, unique=True),
+              Column('draft', Boolean, nullable=False),
+              Column('content', Text, nullable=False),
+              Column('publish_date', DateTime, default=dt.datetime.utcnow))
 
 
 async def init_pg(app):
@@ -13,16 +36,6 @@ async def init_pg(app):
         maxsize=conf['maxsize'],
     )
     app['db'] = engine
-    # app['api']['db'] = engine
-
-    # from aiohttp_security import setup as setup_security
-    # from aiohttp_security import SessionIdentityPolicy
-    # from .auth import DBAuthorizationPolicy
-
-    # auth_db = DBAuthorizationPolicy(engine)
-    # session_policy = SessionIdentityPolicy()
-    # setup_security(app, session_policy, auth_db)
-    # setup_security(app['api'], session_policy, auth_db)
 
 
 async def close_pg(app):

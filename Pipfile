@@ -12,7 +12,6 @@ python-slugify = "==1.2.4"
 aiosmtplib = "==1.0.2"
 shortuuid = "==0.5.0"
 asyncio-redis = "==0.14.3"
-mongomock = "==3.8.0"
 aiohttp = "*"
 "aiohttp-jinja2" = "*"
 aiohttp-security = "*"
@@ -20,6 +19,7 @@ aiohttp-admin = "*"
 aiopg = "*"
 sqlalchemy = "*"
 pyyaml = "*"
+alembic = "*"
 
 
 [dev-packages]
