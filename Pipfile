@@ -20,6 +20,7 @@ aiopg = "*"
 sqlalchemy = "*"
 pyyaml = "*"
 alembic = "*"
+arrow = "*"
 
 
 [dev-packages]
