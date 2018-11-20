@@ -114,8 +114,17 @@
             {% endblock %}
             <!-- Pager -->
             <ul class="pager">
+              {% if page > 1 %}
+                <li class="previous">
+                  <a href="{{ url('index', query_={'page': page - 1}) }}">
+                    &larr; Próximas entradas
+                  </a>
+                </li>
+              {% endif %}
               <li class="next">
-                <a href="#">Entradas anteriores &rarr;</a>
+                <a href="{{ url('index', query_={'page': page + 1}) }}">
+                  Entradas anteriores &rarr;
+                </a>
               </li>
             </ul>
           </div>

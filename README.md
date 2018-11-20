@@ -6,10 +6,13 @@
     - [x] Migración inicial.
     - [x] Traer datos de producción.
     - [x] Mostrar entradas en index.
-    - [ ] Paginar lista de entradas (máximo 10 por defecto).
-    - [ ] Mostrar una única entrada.
+    - [x] Paginar lista de entradas (máximo 10 por defecto).
+    - [x] Mostrar una única entrada.
     - [ ] Migrar las entradas existentes.
+    - [ ] Arreglar las imágenes estáticas.
     - [ ] Subir a producción.
+ - [ ] Arreglar Acerca debe.
+ - [ ] Arreglar Contacto.
 - [ ] Migrar usuarios.
   - [ ] Crear tabla de usuarios.
   - [ ] Implementar login de usuarios.

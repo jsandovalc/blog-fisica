@@ -15,7 +15,7 @@
           {{ post.title }}
         </h2>
         <h3 class="post-subtitle">
-          {{ post.subtitle }}
+          {{ post.subtitle|safe }}
         </h3>
       </a>
       <p class="post-meta">Publicado en {{ post.publish_date.strftime('%B %d, %Y') }}</p>

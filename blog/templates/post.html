@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Arquímedes - {{ post.title }}{% endblock %}
+{% block title %}Arquímedes - {{ post.posts_title }}{% endblock %}
 
 {% block meta %}
-  <meta name="keywords" content="{{ ','.join(post.tags) }}" />
+  <meta name="keywords" content="{{ ','.join(tags) }}" />
 {% endblock meta %}
 
 {% block head_js %}
@@ -14,11 +14,11 @@
 
 {% block site_heading %}
   <div class="post-heading">
-    <h1>{{ post.title }}</h1>
-    {% if post.subtitle %}
-      <h2 class="subheading">{{ post.subtitle }}</h2>
+    <h1>{{ post.posts_title }}</h1>
+    {% if post.posts_subtitle %}
+      <h2 class="subheading">{{ post.post_subtitle }}</h2>
     {% endif %}
-    <span class="meta">Publicado en {{ post.publish_date.strftime('%B %d, %Y') }}</span>
+    <span class="meta">Publicado en {{ post.posts_publish_date.strftime('%B %d, %Y') }}</span>
   </div>
 {% endblock %}
 
@@ -27,12 +27,12 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-          {{ post.content }}
+          {{ post.posts_content|safe }}
           <center>
             <img src="/static/img/logo-arquimides.png" alt="Logo arquímedes">
           </center>
           <div class="tags">
-            Etiquetas: {{ ', '.join(post.tags) }}
+            Etiquetas: {{ ', '.join(tags) }}
           </div>
           <div id="disqus_thread">
           </div>
