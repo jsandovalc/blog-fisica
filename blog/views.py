@@ -1,27 +1,31 @@
 import sqlalchemy as sa
 import aiohttp_jinja2
-from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.dialects.postgresql import ARRAY, array, array_agg
 from .db import posts, tags, tags_posts
 
 
 @aiohttp_jinja2.template('index.html')
 async def index(request):
+    offset = (int(request.query.get('page')) - 1) * 10
     async with request.app['db'].acquire() as conn:
-        query = sa.select([posts, tags, tags_posts,
-                           sa.func.array_agg(
-                               tags.c.title,
-                               type_=ARRAY(sa.String)).label('tags')],
-                          use_labels=True).where(
-            sa.and_(
-                posts.c.id == tags_posts.c.post,
-                tags_posts.c.tag == tags.c.id)).group_by(
-                    posts.c.id, tags.c.id, tags_posts.c.tag, tags_posts.c.post)
-        # .order_by(db.posts.c.publish_date.desc())
-        print(query)
-        ret = await conn.execute(query)
+        query = f'''
+        SELECT p.id, p.title, p.publish_date, p.slug, p.subtitle,
+        (
+        SELECT ARRAY(SELECT t.title
+        FROM tags_posts pt
+        JOIN tags t ON t.id=pt.tag
+        WHERE pt.post = p.id)
+        ) AS post_tags
+        FROM posts p
+        OFFSET :page ROWS
+        ORDER BY p.publish_date DESC LIMIT 10;
+        '''
+        ret = await conn.execute(query, page=offset)
         db_posts = await ret.fetchall()
-        # print(dir(posts[0]), 'llaves', posts[0].items())
-        for item in db_posts[0].keys():
-            print(item)
-        # print(db_posts[0]['tags'], len(db_posts))
+
     return {'posts': db_posts}
+
+
+@aiohttp_jinja2.template('post.html')
+async def post(request):
+    return {}

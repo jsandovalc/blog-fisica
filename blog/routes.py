@@ -9,7 +9,7 @@ def setup_routes(app):
     # app.router.add_get('/login', views.login, name='login')
     # app.router.add_get('/logout', views.login, name='logout')
     # app.router.add_get('/post', views.login, name='posts')
-    # app.router.add_get('/post/{slug}', views.login, name='posts')
+    app.router.add_get('/post/{slug}', views.post, name='post')
     # app.router.add_get('/admin/post/{slug}', views.login, name='post')
     # app.router.add_get('/about', views.login, name='about')
     # app.router.add_get('/contact', views.login, name='contact')
