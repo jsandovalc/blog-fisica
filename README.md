@@ -10,10 +10,12 @@
     - [x] Mostrar una única entrada.
     - [ ] Migrar las entradas existentes.
     - [ ] Arreglar las imágenes estáticas.
-    - [ ] Subir a producción.
- - [ ] Arreglar Acerca debe.
+ - [ ] Arreglar Acerca de.
  - [ ] Arreglar Contacto.
+ - [ ] Subir a producción.
+ - [ ] Arreglar botones en post individual.
 - [ ] Migrar usuarios.
+
   - [ ] Crear tabla de usuarios.
   - [ ] Implementar login de usuarios.
 - [ ] Panel de administración.
