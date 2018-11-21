@@ -6,3 +6,4 @@ __pycache__/
 /config.py
 .dir-locals.el
 /static/uploads/
+/config/blog.yaml
