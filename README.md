@@ -27,3 +27,6 @@
 - [ ] Agregar imagen destacada para facebook.
 - [ ] Agregar metainformación de twitter.
 - [ ] Eliminar entrada.
+
+# Ideas menores
+- [ ] ¿TOML en vez de YAML?

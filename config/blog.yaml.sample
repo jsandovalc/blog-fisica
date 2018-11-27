@@ -6,6 +6,7 @@ postgres:
   port: 5432
   minsize: 1
   maxsize: 5
+  url: postgresql://arquimedes:arquimedes123@127.0.0.1/blog_fisica
 mail:
   host: smtp.gmail.com
   port: 587

@@ -10,6 +10,13 @@ from blog.db import metadata
 # access to the values within the .ini file in use.
 config = context.config
 
+from blog.settings import config as blog_config
+
+config.set_main_option('sqlalchemy.url',
+                       blog_config['postgres'].get(
+                           'url',
+                           'postgresql://arquimedes:arquimedes123@127.0.0.1/blog_fisica'))
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
