@@ -26,7 +26,9 @@
 - [ ] Agregar metainformación de facebook.
 - [ ] Agregar imagen destacada para facebook.
 - [ ] Agregar metainformación de twitter.
-- [ ] Eliminar entrada.
+- [ ] Delete post..
+- [ ] Port to config file.
+- [ ] Translate README to english.
 
 # Ideas menores
 - [ ] ¿TOML en vez de YAML?
