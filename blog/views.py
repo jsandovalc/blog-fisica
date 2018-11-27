@@ -1,5 +1,7 @@
+import asyncio
 import sqlalchemy as sa
 import aiohttp_jinja2
+import aiosmtplib
 from email.mime.text import MIMEText
 from aiohttp import web
 from . import db
@@ -61,12 +63,14 @@ async def about(request):
 async def contact(request):
     return {}
 
+
 @aiohttp_jinja2.template('contact.html')
 async def post_contact(request):
-    host = config.mail_host
-    port = config.mail_port
-    user = config.mail_user
-    password = config.mail_password
+    conf = request.app['config']['mail']
+    host = conf['host']
+    port = conf['post']
+    user = conf['user']
+    password = conf['pass']
 
     loop = asyncio.get_event_loop()
     server = aiosmtplib.SMTP(host, port, loop=loop, use_tls=False)
@@ -85,5 +89,4 @@ async def post_contact(request):
 
     await server.send_message(message)
 
-        # return response.json({'message': 'Mail sent'}, status=201)
     return {}

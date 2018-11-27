@@ -9,9 +9,9 @@
     - [x] Paginar lista de entradas (máximo 10 por defecto).
     - [x] Mostrar una única entrada.
     - [ ] Migrar las entradas existentes.
-    - [ ] Arreglar las imágenes estáticas.
- - [ ] Arreglar Acerca de.
- - [ ] Arreglar Contacto.
+    - [x] Arreglar las imágenes estáticas.
+ - [x] Arreglar Acerca de.
+ - [x] Arreglar Contacto.
  - [ ] Subir a producción.
  - [ ] Arreglar botones en post individual.
 - [ ] Migrar usuarios.

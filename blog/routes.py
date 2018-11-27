@@ -1,7 +1,7 @@
 import pathlib
 from . import views
 
-PROJECT_ROOT = pathlib.Path(__file__).parent
+PROJECT_ROOT = pathlib.Path(__file__).parent.parent
 
 
 def setup_routes(app):
@@ -20,5 +20,7 @@ def setup_routes(app):
 
 def setup_static_routes(app):
     """Main static files."""
+    print('root', PROJECT_ROOT / 'static')
+    print('static route', PROJECT_ROOT / 'static')
     app.router.add_static('/static/', path=PROJECT_ROOT / 'static',
                           name='static')

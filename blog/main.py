@@ -55,14 +55,6 @@ async def init_app(argv=None, redis='redis', init_postgres=None,
 
     app = web.Application(debug=True, middlewares=[handle_401])
 
-    # redis_pool = await create_pool((redis, 6379))
-    # setup_session(app, RedisStorage(redis_pool))
-
-    # aiohttp_jinja2.setup(app,
-    #                      context_processors=[add_user_processor,
-    #                                          aiohttp_jinja2.request_processor],
-    #                      loader=jinja2.PackageLoader('ads', 'templates'))
-
     aiohttp_jinja2.setup(app,
                          loader=jinja2.PackageLoader('blog', 'templates'))
 
@@ -71,14 +63,10 @@ async def init_app(argv=None, redis='redis', init_postgres=None,
     pg = await init_pg(app)
     app.on_cleanup.append(close_postgres or close_pg)
 
-    # app['api'] = api_app
-
     setup_routes(app)
 
     admin = setup_admin(app, pg)
     app.add_subapp('/admin/', admin)
-
-    # app.add_subapp('/api/v1/', api_app)
 
     return app
 
