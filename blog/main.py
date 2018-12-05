@@ -73,10 +73,8 @@ async def init_app(argv=None, redis='redis', init_postgres=None,
 
 def main(argv):
     logging.basicConfig(level=logging.DEBUG)
-
     app = init_app(argv)
-
-    web.run_app(app,  host='0.0.0.0', port=7000)
+    web.run_app(app,  host='0.0.0.0', port=config['blog'].get('port', 7000))
 
 
 if __name__ == '__main__':

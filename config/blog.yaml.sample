@@ -12,3 +12,5 @@ mail:
   port: 587
   user: test@gmail.com
   pass: gmailpass
+blog:
+  port: 7000

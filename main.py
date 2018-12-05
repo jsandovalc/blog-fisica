@@ -315,7 +315,3 @@ def build_app():
     app.add_route(Image.as_view(), '/admin/image')
 
     return app
-
-
-if __name__ == '__main__':
-    build_app().run(host="0.0.0.0", port=7000, debug=True)
