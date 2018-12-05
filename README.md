@@ -1,4 +1,4 @@
-# Migración a aiohttp
+# To aiohttp migration
 
 - [ ] Migrar base de datos.
   - [ ] Crear tabla de entradas (posts).
@@ -8,11 +8,11 @@
     - [x] Mostrar entradas en index.
     - [x] Paginar lista de entradas (máximo 10 por defecto).
     - [x] Mostrar una única entrada.
-    - [ ] Migrar las entradas existentes.
+    - [x] Migrar las entradas existentes.
     - [x] Arreglar las imágenes estáticas.
  - [x] Arreglar Acerca de.
- - [x] Arreglar Contacto.
- - [ ] Subir a producción.
+ - [ ] Arreglar Contacto.
+ - [x] Subir a producción.
  - [ ] Arreglar botones en post individual.
 - [ ] Migrar usuarios.
 
@@ -23,12 +23,14 @@
   - [ ] Listar entradas.
   - [ ] Crear entrada.
   - [ ] Editar entrada.
+# TODO
 - [ ] Agregar metainformación de facebook.
 - [ ] Agregar imagen destacada para facebook.
 - [ ] Agregar metainformación de twitter.
 - [ ] Delete post..
-- [ ] Port to config file.
+- [ ] Port in config file.
 - [ ] Translate README to english.
+- [ ] ¡Dockerize!
 
 # Ideas menores
 - [ ] ¿TOML en vez de YAML?
