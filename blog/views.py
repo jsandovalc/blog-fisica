@@ -61,6 +61,7 @@ async def about(request):
 
 @aiohttp_jinja2.template('contact.html')
 async def contact(request):
+    print('method', request.method)
     return {}
 
 
@@ -68,9 +69,10 @@ async def contact(request):
 async def post_contact(request):
     conf = request.app['config']['mail']
     host = conf['host']
-    port = conf['post']
+    port = conf['port']
     user = conf['user']
     password = conf['pass']
+    print('the vars', vars())
 
     loop = asyncio.get_event_loop()
     server = aiosmtplib.SMTP(host, port, loop=loop, use_tls=False)
@@ -79,10 +81,12 @@ async def post_contact(request):
     await server.starttls()
     await server.login(user, password)
 
+    post_data = await request.post()
+
     message = MIMEText(
-        request.post().get('name') + '\n\n' +
-        request.post().get('message') + '\n\n' +
-        ','.join(request.post.get('email')))
+        post_data.get('name') + '\n\n' +
+        post_data.get('message') + '\n\n' +
+        post_data.get('email'))
     message['From'] = user
     message['To'] = user
     message['Subject'] = 'Mensaje recibido en el blog de Arquímedes'

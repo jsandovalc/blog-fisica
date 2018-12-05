@@ -1,7 +1,7 @@
 # To aiohttp migration
 
-- [ ] Migrar base de datos.
-  - [ ] Crear tabla de entradas (posts).
+- [x] Migrar base de datos.
+  - [x] Crear tabla de entradas (posts).
     - [x] Crear la tabla.
     - [x] Migración inicial.
     - [x] Traer datos de producción.
@@ -11,11 +11,9 @@
     - [x] Migrar las entradas existentes.
     - [x] Arreglar las imágenes estáticas.
  - [x] Arreglar Acerca de.
- - [ ] Arreglar Contacto.
+ - [x] Arreglar Contacto.
  - [x] Subir a producción.
- - [ ] Arreglar botones en post individual.
 - [ ] Migrar usuarios.
-
   - [ ] Crear tabla de usuarios.
   - [ ] Implementar login de usuarios.
 - [ ] Panel de administración.
@@ -23,6 +21,7 @@
   - [ ] Listar entradas.
   - [ ] Crear entrada.
   - [ ] Editar entrada.
+- [ ] Arreglar botones en post individual.
 # TODO
 - [ ] Agregar metainformación de facebook.
 - [ ] Agregar imagen destacada para facebook.
