@@ -72,13 +72,13 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="{{ app.url_for('index') }}">Inicio</a>
+              <a href="{{ url_for('index') }}">Inicio</a>
             </li>
             <li>
-              <a href="{{ app.url_for('about') }}">Acerca de</a>
+              <a href="{{ url_for('about') }}">Acerca de</a>
             </li>
             <li>
-              <a href="{{ app.url_for('contact') }}">Contacto</a>
+              <a href="{{ url_for('contact') }}">Contacto</a>
             </li>
           </ul>
         </div>
@@ -89,7 +89,7 @@
 
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
-    <header class="intro-header" style="background-image: url('/static/img/home-bg.jpg')">
+    <header class="intro-header" style="background-image: url('{{ url_for('static', path='/img/home-bg.jpg')}}')">
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -114,8 +114,17 @@
             {% endblock %}
             <!-- Pager -->
             <ul class="pager">
+              {% if page > 1 %}
+                <li class="previous">
+                  <a href="{{ url_for('index', query_={'page': page - 1}) }}">
+                    &larr; Próximas entradas
+                  </a>
+                </li>
+              {% endif %}
               <li class="next">
-                <a href="#">Entradas anteriores &rarr;</a>
+                <a href="{{ url_for('index', query_={'page': page + 1}) }}">
+                  Entradas anteriores &rarr;
+                </a>
               </li>
             </ul>
           </div>
