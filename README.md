@@ -1,18 +1,5 @@
-# To aiohttp migration
+# To fastapi migration
 
-- [x] Migrar base de datos.
-  - [x] Crear tabla de entradas (posts).
-    - [x] Crear la tabla.
-    - [x] Migración inicial.
-    - [x] Traer datos de producción.
-    - [x] Mostrar entradas en index.
-    - [x] Paginar lista de entradas (máximo 10 por defecto).
-    - [x] Mostrar una única entrada.
-    - [x] Migrar las entradas existentes.
-    - [x] Arreglar las imágenes estáticas.
- - [x] Arreglar Acerca de.
- - [x] Arreglar Contacto.
- - [x] Subir a producción.
 - [ ] Migrar usuarios.
   - [ ] Crear tabla de usuarios.
   - [ ] Implementar login de usuarios.
@@ -22,6 +9,16 @@
   - [ ] Crear entrada.
   - [ ] Editar entrada.
 - [ ] Arreglar botones en post individual.
+- [ ] Migrar a FastAPI.
+  - [ ] Instalar dependencias.
+  - [ ] Crear app.
+  - [ ] Agregar soporte de usuarios.
+  - [ ] Migrar vista de index.
+  - [ ] Migrar vista de post.
+  - [ ] Migrar vista de crear entrada.
+  - [ ] Migrar vista de subir imagen.
+  - [ ] Migrar los datos que actualmente hay en producción.
+  - [ ] Subir a producción con nueva versión de python.
 # TODO
 - [ ] Agregar metainformación de facebook.
 - [ ] Agregar imagen destacada para facebook.
